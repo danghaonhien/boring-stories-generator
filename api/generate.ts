@@ -7,7 +7,9 @@ const NEWS_API_KEY = process.env.NEWS_API_KEY;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const REPO_NAME = process.env.REPO_NAME;
 
-const categoryMap = {
+type Category = 'tech' | 'design' | 'life';
+
+const categoryMap: Record<Category, string> = {
   tech: 'technology',
   design: 'design', // Design could be UX/UI news
   life: 'general',
@@ -16,19 +18,20 @@ const categoryMap = {
 const getPromptForCategory = (category: string, headlines: string) => {
   const base = `Write a short blog post for a site called \"The Boring Dev\". Use a dry, mildly sarcastic, yet clever tone.`;
 
-  const topics = {
+  const topics: Record<Category, string> = {
     tech: `${base} The topic is Boring Tech. Focus on mundane or over-discussed tech trends. Base it on these news headlines:\n\n${headlines}`,
     design: `${base} The topic is Boring Design. Highlight outdated trends, design system drama, or designer fatigue. Base it on these headlines:\n\n${headlines}`,
     life: `${base} The topic is Boring Life. Relate to remote work struggles, mundane routines, or productivity myths. Base it on these headlines:\n\n${headlines}`,
   };
 
-  return topics[category] || base;
+  return topics[category as Category] || base;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+// Using ES Module export syntax
+export const handler = async (req: VercelRequest, res: VercelResponse) => {
   try {
     const { category = 'tech' } = req.body;
-    const newsCategory = categoryMap[category] || 'technology';
+    const newsCategory = categoryMap[category as Category] || 'technology';
 
     const newsRes = await axios.get('https://newsapi.org/v2/top-headlines', {
       params: {
@@ -94,4 +97,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('API Error:', error);
     res.status(500).json({ error: 'Failed to generate story' });
   }
-} 
+};
+
+// Default export
+export default handler; 

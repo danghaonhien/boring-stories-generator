@@ -7,13 +7,17 @@ set -e
 echo "Installing dependencies..."
 npm install
 
-# Build the application
-echo "Building the application..."
+# Build the frontend application
+echo "Building the frontend application..."
 npm run build
 
-# Copy any necessary files for the API
+# Build API functions
+echo "Building API functions..."
+node --input-type=module api/_build.js
+
+# Copy built API files to the dist directory
 echo "Setting up API functions..."
 mkdir -p dist/api
-cp -r api/* dist/api/
+cp -r api/build/* dist/api/
 
 echo "Build completed successfully!" 
