@@ -1,71 +1,78 @@
-# The Boring Dev - Stories Generator
+# The Boring Dev - Story Generator
 
-A minimal frontend app for generating and scheduling automated Boring Stories in Tech, Design, and Life.
+A minimal frontend app for generating and scheduling automated **Boring Stories** in **Tech, Design, and Life** for "The Boring Dev". Built with Vite, React, TypeScript, and TailwindCSS.
 
-## Checklist
+## Features
 
-### Project Setup
-- [x] Initialize Vite project with React + TypeScript
-- [x] ~~Install TailwindCSS and configure~~ (Using inline styles instead due to configuration issues)
-- [x] Install Axios
+- ✅ Simple UI for generating stories on-demand
+- ✅ Category selection (Tech, Design, Life)
+- ✅ API integration with OpenAI GPT-4 
+- ✅ Automatic sourcing of relevant news headlines
+- ✅ Auto-saving of generated stories to GitHub repository
+- ✅ Daily automated story generation via GitHub Actions
+
+## Setup Instructions
+
+### Prerequisites
+
+- Node.js (v16+)
+- npm or yarn
+- Vercel account
+- OpenAI API key
+- News API key
+- GitHub personal access token
 
 ### Environment Variables
-- [x] Create `.env` file with API URL
-- [x] Prepare for Vercel deployment environment variables
 
-### Frontend UI
-- [x] Create Generate page
-- [x] Implement story generation UI
-- [x] Add category selection
+1. Frontend env (`.env`):
+   ```
+   VITE_API_BASE_URL=/api
+   ```
 
-### Serverless API
-- [x] Create API endpoint for story generation
-- [x] Implement OpenAI integration
-- [x] Implement NewsAPI integration
-- [x] Add GitHub storage for stories
+2. Vercel Dashboard (for API):
+   ```
+   OPENAI_API_KEY=sk-...
+   NEWS_API_KEY=your-news-api-key
+   GITHUB_TOKEN=ghp_...
+   REPO_NAME=username/theboringdev
+   ```
 
-### Scheduler
-- [x] Set up GitHub Actions workflow for daily generation
+3. GitHub Secrets (for Action):
+   ```
+   GENERATE_TOKEN=your-auth-token
+   ```
+
+### Installation
+
+1. Clone the repository
+   ```
+   git clone https://github.com/yourusername/boring-stories-generator.git
+   cd boring-stories-generator
+   ```
+
+2. Install dependencies
+   ```
+   npm install
+   ```
+
+3. Start development server
+   ```
+   npm run dev
+   ```
 
 ### Deployment
-- [x] Set up Vercel configuration
 
-### Security
-- [x] Add API key authentication
-- [x] Implement rate limiting
-- [x] Add request validation
-- [x] Secure environment variables
+Deploy to Vercel:
+```
+npx vercel
+```
 
-## How to use
+## Usage
 
-1. Clone this repository
-2. Install dependencies with `npm install`
-3. Create a local `.env` file based on `.env.example`
-4. Set up environment variables:
-   - In the local `.env` file: `VITE_API_BASE_URL=/api`
-   - In Vercel Dashboard:
-     - `OPENAI_API_KEY` - Your OpenAI API key
-     - `NEWS_API_KEY` - Your NewsAPI API key
-     - `GITHUB_TOKEN` - GitHub personal access token
-     - `REPO_NAME` - Your repository in format "username/repo"
-     - `API_SECRET_KEY` - Secret key for authenticating API requests
-5. Run locally with `npm run dev`
-6. Deploy to Vercel by connecting your GitHub repository
+1. Select a category (Tech, Design, Life)
+2. Click "Generate" to create a new boring story
+3. The story will be displayed and automatically saved to your GitHub repository
 
-## API Endpoints
+## License
 
-- `/api/generate` - POST request with JSON body `{"category": "tech|design|life"}`
-  - Requires Authorization header: `Authorization: Bearer YOUR_API_SECRET_KEY`
-  - Rate limited to 5 requests per minute per IP address
-
-## Security Notes
-
-- API keys and tokens are stored in Vercel environment variables, not in the code
-- The `.env` file is excluded from git to prevent accidental exposure of secrets
-- API endpoints are protected with authentication and rate limiting
-- Use a secure, random string for `API_SECRET_KEY` (e.g., generate with `openssl rand -hex 32`)
-- For GitHub Actions, add `API_SECRET_KEY` as a repository secret
-
-## Implementation Notes
-
-Due to configuration issues with Tailwind CSS and PostCSS, this implementation uses inline styles instead. The functionality remains identical to the original requirements.
+MIT

@@ -10,21 +10,12 @@ jobs:
     steps:
       - name: Generate Tech Story
         run: |
-          curl -X POST "https://theboringdev.com/api/generate" \
-            -H "Authorization: Bearer ${{ secrets.API_SECRET_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{"category":"tech"}'
-        
+          curl -X POST "https://theboringdev.com/api/generate" -H "Authorization: Bearer ${{ secrets.GENERATE_TOKEN }}" -H "Content-Type: application/json" -d '{"category":"tech"}'
+      
       - name: Generate Design Story
         run: |
-          curl -X POST "https://theboringdev.com/api/generate" \
-            -H "Authorization: Bearer ${{ secrets.API_SECRET_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{"category":"design"}'
-        
+          curl -X POST "https://theboringdev.com/api/generate" -H "Authorization: Bearer ${{ secrets.GENERATE_TOKEN }}" -H "Content-Type: application/json" -d '{"category":"design"}'
+      
       - name: Generate Life Story
         run: |
-          curl -X POST "https://theboringdev.com/api/generate" \
-            -H "Authorization: Bearer ${{ secrets.API_SECRET_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{"category":"life"}' 
+          curl -X POST "https://theboringdev.com/api/generate" -H "Authorization: Bearer ${{ secrets.GENERATE_TOKEN }}" -H "Content-Type: application/json" -d '{"category":"life"}' 
