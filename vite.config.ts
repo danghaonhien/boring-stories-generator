@@ -7,11 +7,6 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
-    headers: {
-      'Content-Type': 'application/javascript',
-      'Cache-Control': 'no-cache',
-      'X-Content-Type-Options': 'nosniff'
-    },
   },
   build: {
     outDir: 'dist',
