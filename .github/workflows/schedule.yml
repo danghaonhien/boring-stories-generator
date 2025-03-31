@@ -1,0 +1,30 @@
+name: Daily Boring Story
+
+on:
+  schedule:
+    - cron: '0 15 * * *' # 3PM UTC daily
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Tech Story
+        run: |
+          curl -X POST "https://theboringdev.com/api/generate" \
+            -H "Authorization: Bearer ${{ secrets.API_SECRET_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"category":"tech"}'
+        
+      - name: Generate Design Story
+        run: |
+          curl -X POST "https://theboringdev.com/api/generate" \
+            -H "Authorization: Bearer ${{ secrets.API_SECRET_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"category":"design"}'
+        
+      - name: Generate Life Story
+        run: |
+          curl -X POST "https://theboringdev.com/api/generate" \
+            -H "Authorization: Bearer ${{ secrets.API_SECRET_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"category":"life"}' 
