@@ -45,7 +45,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const gptRes = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model: 'gpt-4-1106-preview',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: 'You are a dry but witty blogger.' },
           { role: 'user', content: prompt },

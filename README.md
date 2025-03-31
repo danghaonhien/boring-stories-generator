@@ -6,7 +6,7 @@ A minimal frontend app for generating and scheduling automated **Boring Stories*
 
 - ✅ Simple UI for generating stories on-demand
 - ✅ Category selection (Tech, Design, Life)
-- ✅ API integration with OpenAI GPT-4 
+- ✅ API integration with OpenAI GPT-3.5 Turbo 
 - ✅ Automatic sourcing of relevant news headlines
 - ✅ Auto-saving of generated stories to GitHub repository
 - ✅ Daily automated story generation via GitHub Actions

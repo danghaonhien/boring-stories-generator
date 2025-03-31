@@ -23,7 +23,7 @@
 ## 🧩 Serverless API
 
 - [x] Created api/generate.ts for the Vercel Serverless Function
-- [x] Implemented API integration with OpenAI GPT-4
+- [x] Implemented API integration with OpenAI GPT-3.5 Turbo
 - [x] Added News API integration to get relevant headlines
 - [x] Implemented GitHub auto-saving of generated stories
 - [x] Added error handling for the API
