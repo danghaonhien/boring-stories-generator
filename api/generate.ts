@@ -107,7 +107,7 @@ export const handler = async (req: VercelRequest, res: VercelResponse) => {
         model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: BORING_DEV_PROMPT },
-          { role: 'user', content: promptContent },
+          { role: 'user', content: promptContent + '\n\nMake sure to include a catchy, ironic headline as a level 1 markdown heading (# Your Headline Here) at the start of your article.' },
         ],
       },
       {
@@ -118,7 +118,21 @@ export const handler = async (req: VercelRequest, res: VercelResponse) => {
     );
 
     const story = gptRes.data.choices[0].message.content;
-    const title = story.split('\n')[0].replace(/^#+\s*/, '').trim();
+    
+    // Make sure the story starts with a proper Markdown heading
+    let processedStory = story;
+    if (!story.trim().startsWith('#')) {
+      const firstLineBreak = story.indexOf('\n');
+      if (firstLineBreak > -1) {
+        const title = story.substring(0, firstLineBreak).trim();
+        const restOfStory = story.substring(firstLineBreak);
+        processedStory = `# ${title}${restOfStory}`;
+      } else {
+        processedStory = `# ${story.trim()}`;
+      }
+    }
+    
+    const title = processedStory.split('\n')[0].replace(/^#+\s*/, '').trim();
     const filename = `stories/${new Date().toISOString().split('T')[0]}-${category}-${title.replace(/\s+/g, '-').toLowerCase()}.md`;
 
     if (GITHUB_TOKEN && REPO_NAME) {
@@ -131,7 +145,7 @@ export const handler = async (req: VercelRequest, res: VercelResponse) => {
           repo,
           path: filename,
           message: `Auto-generate ${category} story: ${title}`,
-          content: Buffer.from(story).toString('base64'),
+          content: Buffer.from(processedStory).toString('base64'),
           committer: {
             name: 'The Boring Bot',
             email: 'noreply@theboringdev.com',
@@ -148,7 +162,7 @@ export const handler = async (req: VercelRequest, res: VercelResponse) => {
       console.warn('GITHUB_TOKEN or REPO_NAME not provided. Skipping GitHub file creation.');
     }
 
-    res.status(200).json({ story });
+    res.status(200).json({ story: processedStory });
   } catch (error) {
     console.error('API Error:', error);
     res.status(500).json({ error: 'Failed to generate story' });
