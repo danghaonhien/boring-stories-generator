@@ -1,6 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 import { Octokit } from 'octokit';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const NEWS_API_KEY = process.env.NEWS_API_KEY;
@@ -15,38 +17,30 @@ const categoryMap: Record<Category, string> = {
   life: 'general',
 };
 
-// Boring Dev prompt from our style guide
-const BORING_DEV_PROMPT = `You are a dry, clever blogger writing for a website called "The Boring Dev" — a publication that covers the dull, over-discussed, or slightly ridiculous side of tech, design, and life in the modern digital world.
-
-Your voice is a mix of observational wit, deadpan sarcasm, and subtle critique — think: someone who's tired, informed, and self-aware, but still enjoys reporting on the absurdity of modern tech culture.
-
-Write short articles (~500 words) that take a current piece of tech/design/life news and analyze it through the lens of boredom, trend fatigue, and corporate buzzword absurdity. Treat everything like it *wants* to sound important — but you're not impressed.
-
-IMPORTANT: You MUST strictly follow this structure in exactly this order:
-1. **Lead-in:** A semi-dramatic opening line referencing the news item. (1-2 sentences)
-2. **Breakdown:** What the news is actually about without any hype. Include at least one specific fact or detail. (2-3 sentences)
-3. **Cultural Observation:** Why this is interesting, annoying, or a sign of the times. Reference broader tech trends here. (3-4 sentences)
-4. **Mildly Ironic Reflection:** Offer your opinion in a subtle, deadpan way. Do not exaggerate or use hyperbole. (2-3 sentences)
-5. **Wrap-Up:** Close with a wry note or a call to quietly continue with our lives. Keep this brief and understated. (1-2 sentences)
-
-You MUST:
-- Reference exact headlines as provided (do not modify them)
-- Include at least one direct quote or specific summary from sources
-- Maintain a consistent voice that sounds like a jaded but lovable product designer/dev
-- Stay within 450-550 words total
-- Include exactly one paragraph for each of the 5 structure points above
-
-You MUST NOT:
-- Be over-the-top snarky or mean-spirited
-- Use excessive humor, puns, or jokes
-- Sound like a hypebeast or startup pitch deck
-- Diverge from the 5-part structure for any reason
-- Add additional sections or omit any required sections
-
-Format output in Markdown with:
-- A level 1 heading (#) for the title
-- No additional formatting beyond regular paragraphs and occasional *emphasis*
-- No additional headings, lists, or special characters`;
+// Function to read the prompt from product-docs/prompts.md
+const readPromptFromFile = (): string => {
+  try {
+    const promptPath = path.join(process.cwd(), 'product-docs', 'prompts.md');
+    const fileContent = fs.readFileSync(promptPath, 'utf8');
+    
+    // Extract the system prompt part (everything between the title and the Example Use section)
+    const promptMatch = fileContent.match(/🧠 ✍️ The Boring Dev – GPT Writing Style Prompt[\s\S]+?(?=🧪 Example Use in Code)/);
+    
+    if (promptMatch && promptMatch[0]) {
+      // Clean up the prompt by removing markdown code block markers and meta text
+      return promptMatch[0]
+        .replace(/text\s+Copy\s+Edit/g, '')
+        .replace(/^🧠 ✍️ The Boring Dev – GPT Writing Style Prompt\s+/g, '')
+        .trim();
+    }
+    
+    throw new Error('Could not parse prompt from file');
+  } catch (error) {
+    console.error('Error reading prompt file:', error);
+    // Fallback to default prompt if file read fails
+    return `You are a dry, clever blogger writing for a website called "The Boring Dev"...`;
+  }
+};
 
 const getPromptForCategory = (category: string, headlines: string) => {
   const categoryCues: Record<Category, string> = {
@@ -63,6 +57,9 @@ export const handler = async (req: VercelRequest, res: VercelResponse) => {
   try {
     const { category = 'tech' } = req.body;
     const newsCategory = categoryMap[category as Category] || 'technology';
+
+    // Get system prompt from file
+    const BORING_DEV_PROMPT = readPromptFromFile();
 
     const newsRes = await axios.get('https://newsapi.org/v2/top-headlines', {
       params: {
